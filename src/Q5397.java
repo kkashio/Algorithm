@@ -8,8 +8,8 @@ import java.util.Scanner;
 *  TEST CASE
 *  <<BP<A>>Cd-
 *  sol ) BAPC
-* ThIsIsS3Cr3t
-* sol ) ThIsIsS3Cr3t
+*  ThIsIsS3Cr3t
+*  sol ) ThIsIsS3Cr3t
 */
 
 public class Q5397 {
