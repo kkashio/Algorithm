@@ -1,42 +1,60 @@
 import java.util.Scanner;
 
-/**
- * Created by Je.vinci.Inc. on 2017. 2. 23..
- */
 public class Q2840 {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
+
+        int point = 0;
+        boolean err = false;
         int n = scan.nextInt();
         int k = scan.nextInt();
-        int[] s = new int[k];
-        char[] c = new char[k];
-        int point = 0;
-        char[] arr = new char[n];
+        int[] num = new int[k];
+        char[] ch = new char[k];
+        char[] result = new char[n];
+        char[] dup = new char[128];
+        //input
+        for(int i=0; i<k; i++){
+            num[i] = scan.nextInt();
+            ch[i] = scan.next().charAt(0);
+        }
 
-
-
+        //init result array
         for(int i=0; i<n; i++){
-            arr[i] = '!';
+            result[i] = '?';
         }
 
+        //algo
         for(int i=0; i<k; i++){
-            s[i] = scan.nextInt();
-            c[i] = scan.next().charAt(0);
-        }
+            dup[ch[k-1-i]]++;
 
-        for(int i=0; i<k; i++){
-            if(arr[point] == '!')
-                arr[point] = c[k-i-1];
-            else
-                arr[point] = '?';
+            if(result[point] != '?') {
 
-            point += s[k-i-1];
-            if(point >= n) {
+                if(result[point] != ch[k-1-i]) {
+                    err = true;
+                    break;
+                } else {
+                    dup[ch[k-1-i]]--;
+                }
+            }
+            result[point] = ch[k-1-i];
+
+
+            if(dup[ch[k-1-i]] == 2) { //A라는 글자가 두개이상 쓰였는지 검사하는거
+                err = true;
+            }
+            point += num[k-1-i];
+
+            if(point >= n){
                 point = point % n;
             }
         }
-        for(char a : arr)
-            System.out.print(a);
+
+        if(err){
+            System.out.println("!");
+            return ;
+        }
+
+        for(char c : result)
+            System.out.print(c);
     }
 }
-
