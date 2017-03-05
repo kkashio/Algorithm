@@ -1,55 +1,56 @@
+import java.util.LinkedList;
 import java.util.Scanner;
-
-/**
- * Created by PARK on 2017-02-16.
- */
-
-/*
-*  TEST CASE
-*  <<BP<A>>Cd-
-*  sol ) BAPC
-*  ThIsIsS3Cr3t
-*  sol ) ThIsIsS3Cr3t
-*/
 
 public class Q5397 {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         int testCase = scan.nextInt();
-        String[] result = new String[testCase];
-        
+        String[] input = new String[testCase];
+
         for(int i=0; i<testCase; i++){
-            StringBuffer sb = new StringBuffer();
-            String input = scan.next();
+            input[i] = scan.next();
+        }
 
-            int point = 0;
+        //start
+        LinkedList<Character> preList;
+        LinkedList<Character> postList;
+        char tmp;
 
-            for(int j=0; j<input.length(); j++) {
-                switch (input.charAt(j)) {
+        for(int i=0; i<testCase; i++){
+            char ch;
+            preList = new LinkedList<>();
+            postList = new LinkedList<>();
+            for(int j=0; j<input[i].length(); j++){
+                tmp = input[i].charAt(j);
+                switch (tmp){
                     case '<':
-                        if (point > 0) point--;
+                        if(preList.size() > 0){
+                            ch = preList.getLast();
+                            preList.removeLast();
+                            postList.addFirst(ch);
+                        }
                         break;
                     case '>':
-                        if (point < sb.length()) point++;
+                        if(postList.size() > 0){
+                            ch = postList.getFirst();
+                            postList.removeFirst();
+                            preList.addLast(ch);
+                        }
                         break;
                     case '-':
-                        if (point > 0) {
-                            sb.deleteCharAt(point - 1);
-                            point--;
+                        if(preList.size() > 0){
+                            preList.removeLast();
                         }
                         break;
                     default:
-                        sb.insert(point, input.charAt(j));
-                        point++;
-                        break;
+                        preList.addLast(tmp);
                 }
             }
-            result[i] = sb.toString();
-        }
-        
-        for(String tmp: result){
-            System.out.println(tmp);
+            preList.addAll(postList);
+            for(char c : preList) {
+                System.out.print(c);
+            }
+            System.out.println();
         }
     }
-
 }
