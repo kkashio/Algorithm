@@ -1,47 +1,44 @@
-import java.util.LinkedList;
 import java.util.Scanner;
-import java.util.Stack;
 
 /**
  * Created by seongmin Park on 2017. 6. 5..
+ * DP 문제
+ * N일까지 최대 가치를 구하는 문제
  */
 public class Q14501 {
+
+    static int N;
+    static int[] T;
+    static int[] P;
+    static int max_cost;
+
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
 
-        int n = scan.nextInt();
-        int[][] arr = new int[n][2];
+        N = scan.nextInt();
+        T = new int[N+1];
+        P = new int[N+1];
+        for(int i=1; i<=N; i++){
+            T[i] =scan.nextInt();
+            P[i] =scan.nextInt();
+        }
+        max_cost = 0;
 
-        for(int i=0; i<n; i++){
-            arr[i][0] = scan.nextInt();
-            arr[i][1] = scan.nextInt();
+        DFS(1,0);
+
+        System.out.println(max_cost);
+
+    }
+
+    private static void DFS(int d, int sum){
+        if(d == N + 1){
+            max_cost = Math.max(max_cost, sum);
+            return;
         }
 
-        Stack<Integer> stack = new Stack<>();
-        LinkedList<Integer> list = new LinkedList<>();
-        int max = 0;
-
-        for(int i=1; i<n; i++){
-
-        }
-
-        int[] sum_arr = new int[n];
-        int a = 0;
-        while(!stack.isEmpty()){
-            a = stack.pop();
-            if(a+arr[a][0] > n)
-                continue;
-            sum_arr[a] = arr[a][1];
-            for(int j=a+1; j<a+arr[a][0]; j++){
-                sum_arr[j] = -1;
-            }
-        }
-        int total = 0;
-        for(int b : sum_arr){
-            if(b == -1)
-                continue;
-            total += b;
-        }
-        System.out.println(total);
+        if(d + T[d] <= N + 1)
+            DFS(d+T[d], sum + P[d]);
+        if(d + 1 <= N + 1)
+            DFS(d+1, sum);
     }
 }
