@@ -28,7 +28,7 @@ public class Q11657 {
 
         if(bellman()){
             for(int i=2; i< n+1; i++){
-                System.out.println(dist[i] == INF ? -1 : dist[i]);
+                System.out.println(dist[i] == INF ? NONE : dist[i]);
             }
         } else {
             System.out.println(NONE);
