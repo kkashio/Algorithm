@@ -2,118 +2,89 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
-/**
- * Created by seongmin Park on 2017. 7. 25..
- */
 public class Q2146 {
-    static int n, map[][], copyMap[][], bridge[][], landCnt, move[][] = {{-1,0},{0,-1},{0,1},{1,0}}, min = 10000;
-    static Queue<Pair<Integer,Integer>> queue;
-
+    static int n, oMap[][],lMap[][],mY[]={0,1,0,-1}, mX[]={1,0,-1,0}, landCnt, bridge[][], min=987654321;
+    static Queue<Pair> queue, sQueue;
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        queue = new LinkedList<>();
         n = sc.nextInt();
-        map = new int[n][n];
-        copyMap = new int[n][n];
+        oMap = new int[n][n];
         bridge = new int[n][n];
-
-        for(int i=0; i<n; i++){
-            for(int j=0; j<n; j++){
-                map[i][j] = sc.nextInt();
-            }
+        for(int i=0; i<n; i++)
+            for(int j=0; j<n; j++)
+                oMap[i][j] = sc.nextInt();
+        lMap = new int[n][n];
+        sQueue = new LinkedList<>();
+        labeling();
+        for(int i=1; i<landCnt+1; i++) {
+            bridge(i);
         }
-
-        landCnt = 1;
-        for(int i=0; i<n; i++){
-            for(int j=0; j<n; j++){
-                if(map[i][j] == 1 && copyMap[i][j] == 0)
-                    dfs(i,j,landCnt++);
-            }
-        }
-
-        for(int i=1; i<landCnt; i++){
-            bfs(i);
-        }
-
-
 
         System.out.println(min);
     }
 
-    static void dfs(int y, int x, int cnt ){
-        int nextX, nextY;
-
-        while(!queue.isEmpty()) queue.poll();
-
-        queue.offer(new Pair<>(y,x));
-        copyMap[y][x] = cnt;
-
-        while (!queue.isEmpty()){
-            y = queue.peek().first;
-            x = queue.peek().second;
-            queue.poll();
-
-            for(int i=0; i<4; i++){
-                nextY = y + move[i][0];
-                nextX = x + move[i][1];
-
-                if(nextY >= n || nextY < 0 || nextX >= n || nextX < 0) continue;
-
-                if(map[nextY][nextX] == 1 && copyMap[nextY][nextX] == 0){
-                    queue.offer(new Pair<>(nextY, nextX));
-                    copyMap[nextY][nextX] = cnt;
+    static private void labeling(){
+        landCnt=1;
+        queue = new LinkedList<>();
+        for(int i=0; i<n; i++) {
+            for (int j=0; j<n; j++) {
+                if(oMap[i][j] == 1 && lMap[i][j] == 0){
+                    queue.offer(new Pair(i,j));
+                    bfs(landCnt);
+                    landCnt++;
                 }
             }
         }
+        //print();
     }
 
-    static void bfs(int num){
-        int nextX, nextY;
-
-        init();
-
+    static private void bridge(int sLand){
+        initLmap();
+        int nX, nY;
         for(int i=0; i<n; i++){
             for(int j=0; j<n; j++){
-                if(copyMap[i][j] == num){
+                if(lMap[i][j] == sLand){
                     for(int k=0; k<4; k++){
-                        nextY = i+move[k][0];
-                        nextX = j+move[k][1];
+                        nY = i+mY[k];
+                        nX = j+mX[k];
 
-                        if(nextY >= n || nextY < 0 || nextX >= n || nextX < 0) continue;
-                        if(copyMap[nextY][nextX] == 0){
-                            bridge[nextY][nextX] = 1;
-                            queue.offer(new Pair<>(nextY,nextX));
+                        if(nY > n-1 || nY < 0 || nX > n-1 || nX < 0) continue;
+                        if(lMap[nY][nX] == 0){
+                            bridge[nY][nX] = 1;
+                            queue.offer(new Pair(nY,nX,1));
                         }
                     }
                 }
             }
         }
-
         while(!queue.isEmpty()){
-            int y = queue.peek().first;
-            int x = queue.peek().second;
-            queue.poll();
+            int curY = queue.peek().y;
+            int curX = queue.peek().x;
+            int curLen = queue.poll().len;
 
             for(int i=0; i<4; i++){
-                nextY = y + move[i][0];
-                nextX = x + move[i][1];
+                nY = curY+mY[i];
+                nX = curX+mX[i];
+                if(nY > n-1 || nX > n-1 || nY < 0 || nX < 0) continue;
 
-                if(nextY >= n || nextY < 0 || nextX >= n || nextX < 0) continue;
-                if(copyMap[nextY][nextX] > 0 && copyMap[nextY][nextX] != num){
-                    if(bridge[y][x] < min){
-                        min = bridge[y][x];
-                        return;
+                if(lMap[nY][nX] > 0 && lMap[nY][nX] != sLand){
+                    if(curLen < min){
+                        min = curLen;
                     }
+                    return;
                 }
-                if(copyMap[nextY][nextX] == 0 && bridge[nextY][nextX] == 0){
-                    bridge[nextY][nextX] = bridge[y][x] + 1;
-                    queue.offer(new Pair<>(nextY,nextX));
+
+                if(lMap[nY][nX] == 0 && bridge[nY][nX] == 0){
+                    bridge[nY][nX] = 1;
+                    queue.offer(new Pair(nY,nX,curLen+1));
                 }
             }
         }
+        print();
+
     }
 
-    static void init(){
+    static private void initLmap(){
         while(!queue.isEmpty()) queue.poll();
 
         for(int i=0; i<n; i++){
@@ -123,13 +94,42 @@ public class Q2146 {
         }
     }
 
-    static class Pair<A, B>{
-        A first;
-        B second;
+    static void print(){
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                System.out.print(bridge[i][j]+" ");
+            }
+            System.out.println();
+        }
+    }
 
-        public Pair(A first, B second){
-            this.first = first;
-            this.second = second;
+    static void bfs(int num){
+        while(!queue.isEmpty()) {
+            int curY = queue.peek().y;
+            int curX = queue.poll().x;
+
+            for(int i=0; i<4; i++){
+                int nY = curY+mY[i];
+                int nX = curX+mX[i];
+                if(nY > n-1 || nX > n-1 || nY < 0 || nX < 0) continue;
+                if(oMap[nY][nX] == 1 && lMap[nY][nX] < 1){
+                    lMap[nY][nX] = num;
+                    queue.offer(new Pair(nY,nX));
+                }
+            }
+        }
+    }
+
+    static class Pair{
+        int y,x,len,s;
+        public Pair(int y, int x, int len){
+            this.y = y;
+            this.x = x;
+            this.len = len;
+        }
+        public Pair(int y,int x){
+            this.y= y;
+            this.x = x;
         }
     }
 }
