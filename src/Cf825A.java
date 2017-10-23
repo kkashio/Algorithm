@@ -1,22 +1,23 @@
-/**
- * Created by seongmin Park on 2017. 7. 17..
- */
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
 public class Cf825A {
     public static void main(String[] args) {
-        int key = 0;
-        key |= 1 << 1;
-//        key |= 1 << 3;
-//        key |= 4;
-        key |= 1<<6;
-        System.out.println(Integer.toBinaryString(key));
-        if((key & (1<<3)) == 0) {
-            System.out.println("1");
-        }
-        System.out.println(key & (8));
-        if ((key & (1 << (20 / 10))) == 0) {
+        Scanner sc = new Scanner(System.in);
+        int[] arr = {6,3,7,3,1,4,6,3};
 
+        int tail=0,head=0;
+        Map<Integer, Boolean> map = new HashMap<>();
 
-            System.out.println("틀림");
+        for(int i=0; i<arr.length; i++){
+            if(!map.containsKey(arr[i])){
+                tail = i;
+                map.put(arr[i], true);
+            } else if(arr[head]==arr[i]) {
+                head++;
+            }
         }
+        System.out.printf("head:%d tail:%d length:%d",head,tail,tail-head+1);
     }
 }
